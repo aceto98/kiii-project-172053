@@ -1,0 +1,32 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      BACKEND_HOST: backend
+      BACKEND_PORT: 8000
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql://finance:finance@db:5432/finance_db
+      SECRET_KEY: ${SECRET_KEY}
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: finance_db
+      POSTGRES_USER: finance
+      POSTGRES_PASSWORD: finance
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
