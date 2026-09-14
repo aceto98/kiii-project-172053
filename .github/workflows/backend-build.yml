@@ -1,0 +1,38 @@
+name: Build Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-build.yml"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: false
+          tags: personal-finance-backend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
